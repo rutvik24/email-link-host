@@ -4,11 +4,37 @@ sidebar_position: 1
 
 # Releases
 
-Pushing a tag matching `v*` (example: `v1.2.0`) runs `.github/workflows/release.yml`:
+All apps in this repo share one version from the root **`VERSION`** file:
+
+| Consumer | How it gets the version |
+| --- | --- |
+| Next.js (`package.json`) | `bun run version:sync` |
+| Docs (`docs-website/package.json`) | `bun run version:sync` |
+| Go binary | `internal/version/version.go` (synced) + `-ldflags` in Docker/CI |
+| Docker image | `VERSION` build-arg → binary + OCI label |
+| Git tag / GitHub Release | Tag must be `v$(cat VERSION)` |
+
+## Bump and release
+
+```bash
+bun run version:set 1.2.0    # writes VERSION + syncs all apps
+git add VERSION package.json docs-website/package.json internal/version/version.go
+git commit -m "chore: release 1.2.0"
+git tag v1.2.0
+git push origin main v1.2.0
+```
+
+Or sync only (after editing `VERSION` by hand):
+
+```bash
+bun run version:sync
+```
+
+Pushing tag `v*` runs `.github/workflows/release.yml`, which **fails** if the tag does not match `VERSION`.
 
 1. **Docker Hub** multi-arch push (`linux/amd64`, `linux/arm64`) to `<DOCKERHUB_USERNAME>/firebase-email-link-host`
-2. **Cross-compile** Go binaries (linux/darwin/windows)
-3. **GitHub Release** with binaries, `checksums.txt`, `compose.yml`, `.env.example`, `site.example.json`, `Dockerfile`
+2. **Cross-compile** Go binaries (linux/darwin/windows) with embedded version
+3. **GitHub Release** with binaries, `checksums.txt`, `VERSION`, `compose.yml`, `.env.example`, `site.example.json`, `Dockerfile`
 
 ## Required secrets
 
@@ -16,10 +42,3 @@ Pushing a tag matching `v*` (example: `v1.2.0`) runs `.github/workflows/release.
 | --- | --- |
 | `DOCKERHUB_TOKEN` | Docker Hub access token (required) |
 | `DOCKERHUB_USERNAME` | Docker Hub username (required) |
-
-## Create a release
-
-```bash
-git tag v1.0.0
-git push origin v1.0.0
-```

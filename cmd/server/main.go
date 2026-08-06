@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"email-link-host/internal/site"
+	"email-link-host/internal/version"
 )
 
 func main() {
@@ -41,9 +42,14 @@ func main() {
 	})
 	mux.HandleFunc("/.well-known/assetlinks.json", jsonInlineHandler(assetLinks))
 	mux.HandleFunc("/.well-known/apple-app-site-association", jsonInlineHandler(aasa))
+	mux.HandleFunc("/version", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+		w.Header().Set("Cache-Control", "no-store")
+		_, _ = w.Write([]byte(version.Version + "\n"))
+	})
 
 	addr := listenAddr()
-	log.Printf("email-link-host (go) listening on http://localhost%s", addr)
+	log.Printf("email-link-host %s listening on http://localhost%s", version.Version, addr)
 	log.Printf("brand=%q androidStore=%v iosStore=%v", cfg.Brand, cfg.HasAndroidStore(), cfg.HasIOSStore())
 	if err := http.ListenAndServe(addr, mux); err != nil {
 		log.Fatal(err)

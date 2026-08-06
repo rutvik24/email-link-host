@@ -156,10 +156,17 @@ https://rutvik24.github.io/firebase-email-link-host/
 
 ## Releases (tag → Docker Hub + GitHub Release)
 
+Single source of truth: root **`VERSION`** (Next, docs, Go, Docker).
+
 ```bash
+bun run version:set 1.0.0
+git add VERSION package.json docs-website/package.json internal/version/version.go compose.yml
+git commit -m "chore: release 1.0.0"
 git tag v1.0.0
-git push origin v1.0.0
+git push origin main v1.0.0
 ```
+
+Tag must match `v$(cat VERSION)` or the release workflow fails.
 
 Requires repo secrets:
 

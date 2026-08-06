@@ -12,8 +12,30 @@ env:
   IMAGE_NAME: firebase-email-link-host
 
 jobs:
+  version:
+    name: Validate VERSION
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.read.outputs.version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Read and validate VERSION vs tag
+        id: read
+        run: |
+          VERSION="$(tr -d '[:space:]' < VERSION)"
+          TAG="${GITHUB_REF_NAME#v}"
+          if [ "$TAG" != "$VERSION" ]; then
+            echo "::error::Git tag ($GITHUB_REF_NAME) must match VERSION file (v$VERSION). Bump VERSION, run bun run version:sync, commit, then tag."
+            exit 1
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Release version: $VERSION"
+
   docker:
     name: Multi-arch Docker Hub image
+    needs: [version]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -51,10 +73,13 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            VERSION=${{ needs.version.outputs.version }}
           provenance: false
 
   binaries:
     name: Cross-compile Go binaries
+    needs: [version]
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -84,11 +109,14 @@ jobs:
           GOOS: ${{ matrix.goos }}
           GOARCH: ${{ matrix.goarch }}
           CGO_ENABLED: "0"
+          VERSION: ${{ needs.version.outputs.version }}
         run: |
           mkdir -p dist
           EXT="${{ matrix.ext }}"
           OUT="dist/email-link-host_${{ matrix.goos }}_${{ matrix.goarch }}${EXT}"
-          go build -trimpath -ldflags="-s -w" -o "$OUT" ./cmd/server
+          go build -trimpath \
+            -ldflags="-s -w -X email-link-host/internal/version.Version=${VERSION}" \
+            -o "$OUT" ./cmd/server
           if [ "${{ matrix.goos }}" != "windows" ]; then chmod +x "$OUT"; fi
 
       - name: Upload artifact
@@ -100,7 +128,7 @@ jobs:
 
   release:
     name: GitHub Release
-    needs: [docker, binaries]
+    needs: [version, docker, binaries]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -118,7 +146,7 @@ jobs:
           cd dist
           sha256sum email-link-host_* > checksums.txt
           cd ..
-          cp compose.yml .env.example dist/
+          cp compose.yml .env.example VERSION dist/
           cp config/site.json dist/site.example.json
           cp Dockerfile dist/Dockerfile
 
@@ -129,6 +157,10 @@ jobs:
           name: ${{ github.ref_name }}
           generate_release_notes: true
           body: |
+            ## Version
+
+            `${{ needs.version.outputs.version }}` (from root `VERSION`; shared by Next, docs, Go, Docker)
+
             ## Docker (multi-arch)
 
             ```bash
@@ -146,7 +178,7 @@ jobs:
             ## Release assets
 
             - Go binaries: Linux / macOS / Windows (amd64/arm64 where applicable)
-            - `checksums.txt`
+            - `checksums.txt`, `VERSION`
             - `compose.yml`, `.env.example`, `site.example.json`, `Dockerfile`
 
             ## Docs
@@ -155,6 +187,7 @@ jobs:
           files: |
             dist/email-link-host_*
             dist/checksums.txt
+            dist/VERSION
             dist/compose.yml
             dist/.env.example
             dist/site.example.json
