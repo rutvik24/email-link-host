@@ -151,7 +151,7 @@ bun run docs:dev      # http://localhost:3000/firebase-email-link-host/
 bun run docs:build
 ```
 
-GitHub Pages deploys from `website/` via `.github/workflows/docs.yml` →  
+GitHub Pages deploys from `docs-website/` via `.github/workflows/docs.yml` →  
 https://rutvik24.github.io/firebase-email-link-host/
 
 ## Releases (tag → Docker Hub + GitHub Release)
@@ -161,8 +161,14 @@ git tag v1.0.0
 git push origin v1.0.0
 ```
 
-Requires repo secret `DOCKERHUB_TOKEN` (user `rutviknabhoya`).  
-Image: `rutviknabhoya/firebase-email-link-host`
+Requires repo secrets:
+
+| Secret | Purpose |
+| --- | --- |
+| `DOCKERHUB_USERNAME` | Docker Hub username |
+| `DOCKERHUB_TOKEN` | Docker Hub access token |
+
+Image: `<DOCKERHUB_USERNAME>/firebase-email-link-host`
 
 ## Agent skills
 

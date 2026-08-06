@@ -4,7 +4,7 @@ sidebar_position: 4
 
 # Serverless Docker options
 
-Same image: `rutviknabhoya/firebase-email-link-host`
+Same image: `$DOCKERHUB_USERNAME/firebase-email-link-host`
 
 | Platform | Port | Notes |
 | --- | --- | --- |
@@ -21,7 +21,7 @@ Go listens on `ADDR` (default `:8080`) or `PORT`.
 
 ```bash
 gcloud run deploy email-link-host \
-  --image=rutviknabhoya/firebase-email-link-host:latest \
+  --image=$DOCKERHUB_USERNAME/firebase-email-link-host:latest \
   --platform=managed \
   --allow-unauthenticated \
   --port=8080 \

@@ -72,8 +72,8 @@ const config: Config = {
           position: "right",
         },
         {
-          href: "https://hub.docker.com/r/rutviknabhoya/firebase-email-link-host",
-          label: "Docker Hub",
+          to: "/docs/hosting/docker",
+          label: "Docker",
           position: "right",
         },
       ],
@@ -97,8 +97,8 @@ const config: Config = {
               href: "https://github.com/rutvik24/app-universal-links-helper",
             },
             {
-              label: "Docker image",
-              href: "https://hub.docker.com/r/rutviknabhoya/firebase-email-link-host",
+              label: "Docker hosting",
+              to: "/docs/hosting/docker",
             },
           ],
         },

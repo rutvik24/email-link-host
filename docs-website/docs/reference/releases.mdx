@@ -6,7 +6,7 @@ sidebar_position: 1
 
 Pushing a tag matching `v*` (example: `v1.2.0`) runs `.github/workflows/release.yml`:
 
-1. **Docker Hub** multi-arch push (`linux/amd64`, `linux/arm64`) to `rutviknabhoya/firebase-email-link-host`
+1. **Docker Hub** multi-arch push (`linux/amd64`, `linux/arm64`) to `<DOCKERHUB_USERNAME>/firebase-email-link-host`
 2. **Cross-compile** Go binaries (linux/darwin/windows)
 3. **GitHub Release** with binaries, `checksums.txt`, `compose.yml`, `.env.example`, `site.example.json`, `Dockerfile`
 
