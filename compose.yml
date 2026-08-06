@@ -1,0 +1,14 @@
+services:
+  web:
+    build: .
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    environment:
+      ADDR: ":8080"
+    # Optional: mount a custom site JSON instead of the embedded default
+    # volumes:
+    #   - ./config/site.json:/config/site.json:ro
+    # environment:
+    #   SITE_CONFIG_PATH: /config/site.json

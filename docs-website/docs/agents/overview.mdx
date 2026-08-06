@@ -1,0 +1,25 @@
+---
+sidebar_position: 1
+---
+
+# Agent overview
+
+This repo ships **Cursor Agent Skills** under `skills/` so an AI agent can:
+
+- Collect brand / store / association details from you
+- Host the site with **Docker over SSH** on popular cloud VMs
+- Use **serverless Docker** platforms (Fly, Railway, Render, Google Cloud Run, AWS App Runner, Azure Container Apps)
+- Install cloud CLIs with Bun-friendly docs (always prefer Bun over npm/yarn for JS tooling)
+
+## Install skills
+
+See [Install skills](./install-skills).
+
+## Hosting skills
+
+| Skill | When to use |
+| --- | --- |
+| `host-email-link-docker` | Deploy/run the published Docker image (local, SSH, or serverless) |
+| `install-cloud-clis` | Install `gcloud`, `aws`, `az`, `flyctl`, `railway`, etc. |
+
+Give the agent your `.env` values (or a filled `.env.example`) and target provider; it should follow the skill steps without inventing alternate package managers for this project’s JS tooling.

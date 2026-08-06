@@ -1,36 +1,187 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Firebase Email Link Host
 
-## Getting Started
+Free **static** host for mobile [Firebase Auth email-link](https://firebase.google.com/docs/auth/android/email-link-auth) sign-in (App Links / Universal Links), with a branded landing page and optional store buttons.
 
-First, run the development server:
+- No Firebase JS SDK, no Storage, no App Hosting / Blaze required for Firebase Hosting
+- Association files generated from env
+- Same `out/` artifact for Firebase / Cloudflare / Vercel / Netlify / Amplify
+- **Docker uses a pure Go replica** (single static binary — no Next.js `out/` copied into the image)
+
+## Local development
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cp .env.example .env.local
+# Edit config/site.json and/or env (store URLs, theme, association vars)
+
+bun install
+bun run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Well-known JSON (must render in the browser, not download):
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- [http://localhost:3000/.well-known/apple-app-site-association](http://localhost:3000/.well-known/apple-app-site-association)
+- [http://localhost:3000/.well-known/assetlinks.json](http://localhost:3000/.well-known/assetlinks.json)
 
-## Learn More
+`next.config.ts` sets `Content-Type: application/json` + `Content-Disposition: inline` for these paths in `next dev`.
 
-To learn more about Next.js, take a look at the following resources:
+### Pure Go server (same app, no Node)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+bun run serve          # http://localhost:8080
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Serves the landing page, theme/config from env/`SITE_CONFIG_PATH`, and `.well-known` JSON with `Content-Disposition: inline` (no file download).
 
-## Deploy on Vercel
+Go/Docker accepts **both** env naming styles (unprefixed preferred when both are set):
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+| Unprefixed | Also accepted |
+| --- | --- |
+| `SITE_BRAND` | `NEXT_PUBLIC_SITE_BRAND` |
+| `ANDROID_STORE_URL` | `NEXT_PUBLIC_ANDROID_STORE_URL` |
+| `THEME_ACCENT` | `NEXT_PUBLIC_THEME_ACCENT` |
+| `ANDROID_PACKAGE_NAME` | `NEXT_PUBLIC_ANDROID_PACKAGE_NAME` |
+| `IOS_TEAM_ID` | `NEXT_PUBLIC_IOS_TEAM_ID` |
+| … | same pattern for all site / theme / association vars |
+## Landing page config
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. JSON file — `config/site.json` by default, or `SITE_CONFIG_PATH`
+2. Optional env overrides (`NEXT_PUBLIC_SITE_*`, `NEXT_PUBLIC_THEME_*`, store URLs)
+
+```bash
+SITE_CONFIG_PATH="config/site.json"
+```
+
+| Variable | Purpose |
+| --- | --- |
+| `SITE_CONFIG_PATH` | Path to site JSON (relative or absolute) |
+| `NEXT_PUBLIC_ANDROID_STORE_URL` | Google Play URL — button when set |
+| `NEXT_PUBLIC_IOS_STORE_URL` | App Store URL — button when set |
+| `NEXT_PUBLIC_SITE_*` / `NEXT_PUBLIC_THEME_*` | Copy / theme overrides |
+
+## Association files (from env)
+
+| Variable | Notes |
+| --- | --- |
+| `ANDROID_PACKAGE_NAME` | applicationId |
+| `ANDROID_SHA256_CERT_FINGERPRINTS` | Comma-separated SHA-256 fingerprints |
+| `IOS_TEAM_ID` / `IOS_BUNDLE_ID` | Apple Team ID + bundle ID |
+| `IOS_APP_PATHS` | Optional paths (default `NOT /_/*,/*`) |
+
+## Hosting options
+
+All platforms publish the static `out/` directory from `bun run build`.
+
+### Firebase Hosting (Spark / free)
+
+```bash
+bun run build
+npx -y firebase-tools@latest deploy --only hosting
+```
+
+Headers: [`firebase.json`](firebase.json)
+
+### Cloudflare Pages
+
+- Build command: `bun run build` (or `npm run build`)
+- Output directory: `out`
+- Headers: [`public/_headers`](public/_headers) (copied into `out/`) + optional [`wrangler.toml`](wrangler.toml)
+
+```bash
+npx wrangler pages deploy out
+```
+
+### Vercel
+
+Connect the repo; framework preset can be Other with output `out`, or use [`vercel.json`](vercel.json) headers.
+
+```bash
+bun run build && npx vercel deploy --prebuilt
+```
+
+### Netlify
+
+[`netlify.toml`](netlify.toml) — build `bun run build`, publish `out`, JSON headers for `.well-known`.
+
+### AWS Amplify
+
+[`amplify.yml`](amplify.yml) — build to `out` + `customHeaders` for association files.
+
+### Docker (pure Go — minimal image)
+
+Docker does **not** copy the Next.js `out/` folder. The image is only a statically linked Go binary (`scratch`) that reimplements:
+
+- Landing page (brand / theme / store buttons)
+- Config from embedded defaults, `SITE_CONFIG_PATH`, and env
+- `/.well-known/assetlinks.json` + `apple-app-site-association` as inline JSON
+
+```bash
+docker compose up --build
+# → http://localhost:8080
+```
+
+Or:
+
+```bash
+bun run docker:build
+bun run docker:run   # passes --env-file .env
+```
+
+Typical image size is a few MB (binary only). Pass the same env vars as the Next app; optionally mount a JSON config:
+
+```yaml
+volumes:
+  - ./config/site.json:/config/site.json:ro
+environment:
+  SITE_CONFIG_PATH: /config/site.json
+```
+
+### Go binary (no Docker)
+
+```bash
+go build -ldflags="-s -w" -o bin/server ./cmd/server
+ADDR=:8080 ./bin/server
+```
+
+## Docs site (Docusaurus + Bun)
+
+```bash
+bun run docs:dev      # http://localhost:3000/firebase-email-link-host/
+bun run docs:build
+```
+
+GitHub Pages deploys from `website/` via `.github/workflows/docs.yml` →  
+https://rutvik24.github.io/firebase-email-link-host/
+
+## Releases (tag → Docker Hub + GitHub Release)
+
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+Requires repo secret `DOCKERHUB_TOKEN` (user `rutviknabhoya`).  
+Image: `rutviknabhoya/firebase-email-link-host`
+
+## Agent skills
+
+See `skills/` and docs: [Agent overview](https://rutvik24.github.io/firebase-email-link-host/docs/agents/overview).
+
+```bash
+mkdir -p .cursor/skills
+cp -R skills/* .cursor/skills/
+```
+
+## Scripts
+
+```bash
+bun run generate:well-known
+bun run dev
+bun run build                 # Next static export → out/ (CDN hosts)
+bun run serve                 # Pure Go app on :8080
+bun run docker:build
+bun run docker:run
+bun run docs:dev
+bun run docs:build
+```

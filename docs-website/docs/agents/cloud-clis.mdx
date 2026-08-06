@@ -1,0 +1,69 @@
+---
+sidebar_position: 5
+---
+
+# Cloud provider CLI install
+
+Use skill `install-cloud-clis`. Prefer official installers; for JS CLIs prefer **Bun**.
+
+## Bun (required for this monorepo’s JS)
+
+```bash
+curl -fsSL https://bun.sh/install | bash
+```
+
+## Docker
+
+```bash
+curl -fsSL https://get.docker.com | sh
+```
+
+## Fly.io
+
+```bash
+curl -L https://fly.io/install.sh | sh
+```
+
+## Railway
+
+```bash
+bunx @railway/cli --help
+# or: bun add -g @railway/cli
+```
+
+## Google Cloud
+
+```bash
+# https://cloud.google.com/sdk/docs/install
+curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-linux-x86_64.tar.gz
+# follow official extract + install.sh
+gcloud auth login
+gcloud config set project PROJECT_ID
+```
+
+## AWS CLI
+
+```bash
+# https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o awscliv2.zip
+unzip awscliv2.zip && sudo ./aws/install
+aws configure
+```
+
+## Azure CLI
+
+```bash
+curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+az login
+```
+
+## Firebase / Wrangler / Vercel / Netlify (Bun)
+
+```bash
+bunx firebase-tools@latest --version
+bunx wrangler --version
+bunx vercel --version
+bunx netlify --version
+```
+
+Do **not** use npm or yarn for this project’s scripts.

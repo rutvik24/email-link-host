@@ -1,0 +1,14 @@
+---
+sidebar_position: 5
+---
+
+# Vercel
+
+Publish the static `out/` directory. Headers live in `vercel.json`.
+
+```bash
+bun run build
+bunx vercel deploy --prebuilt
+```
+
+Or connect the GitHub repo and set output to `out`.

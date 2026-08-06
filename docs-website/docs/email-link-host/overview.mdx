@@ -1,0 +1,37 @@
+---
+sidebar_position: 1
+---
+
+# Overview
+
+This repository ships a branded HTTPS origin for Firebase email-link auth on mobile.
+
+## What it serves
+
+| Path | Purpose |
+| --- | --- |
+| `/` | Landing page (brand, tagline, optional store buttons) |
+| `/.well-known/assetlinks.json` | Android App Links verification |
+| `/.well-known/apple-app-site-association` | iOS Universal Links (JSON inline, not a download) |
+
+## Runtimes
+
+1. **Next.js static export** (`bun run build` → `out/`) for Firebase Hosting, Cloudflare Pages, Vercel, Netlify, Amplify
+2. **Go binary / Docker** — full replica without copying `out/` into the image
+
+Docker Hub: [`rutviknabhoya/firebase-email-link-host`](https://hub.docker.com/r/rutviknabhoya/firebase-email-link-host)
+
+## Local (Next)
+
+```bash
+cp .env.example .env.local
+bun install
+bun run dev
+```
+
+## Local (Go)
+
+```bash
+bun run serve
+# http://localhost:8080
+```

@@ -1,0 +1,19 @@
+{
+  "brand": "Email Link Host",
+  "headline": "Continue in the app",
+  "tagline": "This domain hosts secure links for sign-in. Open your app from the store to finish on your phone.",
+  "footer": "Static host for Firebase Auth email links · App Links & Universal Links",
+  "androidStoreLabel": "Get it on Google Play",
+  "iosStoreLabel": "Download on the App Store",
+  "theme": {
+    "background": "#071512",
+    "backgroundAccent": "#12352E",
+    "foreground": "#F3F7F5",
+    "muted": "#9BB5AC",
+    "accent": "#D2F26B",
+    "accentForeground": "#0A1612",
+    "surface": "rgba(255,255,255,0.07)",
+    "border": "rgba(255,255,255,0.14)",
+    "glow": "rgba(210,242,107,0.22)"
+  }
+}

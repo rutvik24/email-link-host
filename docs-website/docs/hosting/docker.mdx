@@ -1,0 +1,47 @@
+---
+sidebar_position: 2
+---
+
+# Docker
+
+Image: [`rutviknabhoya/firebase-email-link-host`](https://hub.docker.com/r/rutviknabhoya/firebase-email-link-host)  
+Architectures: `linux/amd64`, `linux/arm64`  
+Base: `scratch` + single static Go binary
+
+## Run
+
+```bash
+docker pull rutviknabhoya/firebase-email-link-host:latest
+
+docker run --rm -p 8080:8080 --env-file .env \
+  rutviknabhoya/firebase-email-link-host:latest
+```
+
+Or with Compose:
+
+```bash
+docker compose up --build
+```
+
+## Env
+
+Same dual naming as Go (`SITE_BRAND` or `NEXT_PUBLIC_SITE_BRAND`, …). See [Configuration](../email-link-host/configuration).
+
+Optional config mount:
+
+```yaml
+# compose.yml
+services:
+  web:
+    image: rutviknabhoya/firebase-email-link-host:latest
+    ports: ["8080:8080"]
+    env_file: [.env]
+    volumes:
+      - ./config/site.json:/config/site.json:ro
+    environment:
+      SITE_CONFIG_PATH: /config/site.json
+```
+
+## Release tags
+
+Pushing a git tag `v*` builds multi-arch images and a GitHub Release with binaries.             See [Releases](/docs/reference/releases).

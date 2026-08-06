@@ -3,9 +3,19 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "generate:well-known": "bun ./scripts/generate-well-known.ts",
+    "predev": "bun run generate:well-known",
     "dev": "next dev",
+    "prebuild": "bun run generate:well-known",
     "build": "next build",
     "start": "next start",
+    "serve": "go run ./cmd/server",
+    "serve:bin": "go build -ldflags='-s -w' -o bin/server ./cmd/server && ./bin/server",
+    "docker:build": "docker build -t email-link-host .",
+    "docker:run": "docker run --rm -p 8080:8080 --env-file .env email-link-host",
+    "docs:dev": "bun --cwd docs-website start",
+    "docs:build": "bun --cwd docs-website install && bun --cwd docs-website run build",
+    "docs:serve": "bun --cwd docs-website serve",
     "lint": "eslint"
   },
   "dependencies": {

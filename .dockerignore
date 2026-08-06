@@ -1,0 +1,7 @@
+# Ignore everything except what the Go Docker build needs
+*
+!go.mod
+!cmd/
+!cmd/**/*
+!internal/
+!internal/**/*

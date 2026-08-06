@@ -1,0 +1,5 @@
+{
+  "projects": {
+    "default": "firebase-email-link-host"
+  }
+}

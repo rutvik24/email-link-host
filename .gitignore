@@ -17,6 +17,10 @@
 /.next/
 /out/
 
+# generated from env by scripts/generate-well-known.ts
+/public/.well-known/assetlinks.json
+/public/.well-known/apple-app-site-association
+
 # production
 /build
 
@@ -32,6 +36,7 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
 
 # vercel
 .vercel
@@ -39,3 +44,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+/.firebase
+
+# go binary
+/bin/

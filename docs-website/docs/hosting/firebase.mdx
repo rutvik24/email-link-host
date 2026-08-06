@@ -1,0 +1,15 @@
+---
+sidebar_position: 3
+---
+
+# Firebase Hosting
+
+Spark (free) is enough — no App Hosting / Blaze required.
+
+```bash
+bun install
+bun run build
+bunx firebase-tools@latest deploy --only hosting
+```
+
+Headers for `.well-known` are in `firebase.json`. Live example pattern: `https://<site>.web.app`.

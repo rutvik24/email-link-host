@@ -1,0 +1,37 @@
+---
+sidebar_position: 3
+---
+
+# Docker over SSH (cloud VMs)
+
+Use skill `host-email-link-docker` with target `ssh`.
+
+## Providers (VM + Docker)
+
+| Provider | Typical image | SSH user | Notes |
+| --- | --- | --- | --- |
+| DigitalOcean Droplet | Ubuntu | `root` | Install Docker CE |
+| Linode / Akamai | Ubuntu | `root` | Same |
+| Hetzner Cloud | Ubuntu | `root` | Same |
+| AWS EC2 | Ubuntu/Amazon Linux | `ubuntu` / `ec2-user` | Security group :80/:443/:8080 |
+| Google Compute Engine | Ubuntu | custom | `gcloud compute ssh` |
+| Azure VM | Ubuntu | azureuser | NSG ports |
+
+## Agent checklist
+
+1. Ensure Docker is installed on the remote (`curl -fsSL https://get.docker.com | sh` or distro packages)
+2. `scp` `.env` (never commit secrets)
+3. `docker pull rutviknabhoya/firebase-email-link-host:TAG`
+4. Run with `--restart unless-stopped -p 80:8080` (or put Caddy/nginx TLS in front)
+5. Open firewall for HTTP/HTTPS
+6. Verify `curl -sI https://YOUR_DOMAIN/.well-known/apple-app-site-association` returns `Content-Type: application/json`
+
+## Example remote run
+
+```bash
+ssh user@HOST 'docker pull rutviknabhoya/firebase-email-link-host:latest'
+scp .env user@HOST:~/email-link.env
+ssh user@HOST 'docker run -d --name email-link-host --restart unless-stopped \
+  -p 8080:8080 --env-file ~/email-link.env \
+  rutviknabhoya/firebase-email-link-host:latest'
+```

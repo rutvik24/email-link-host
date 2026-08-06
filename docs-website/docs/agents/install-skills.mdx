@@ -1,0 +1,54 @@
+---
+sidebar_position: 2
+---
+
+# Install skills
+
+Skills live in this repository at:
+
+```text
+skills/
+  host-email-link-docker/SKILL.md
+  install-cloud-clis/SKILL.md
+```
+
+## Cursor (project skills)
+
+Copy into the project (or open this repo) so agents pick them up:
+
+```bash
+mkdir -p .cursor/skills
+cp -R skills/host-email-link-docker .cursor/skills/
+cp -R skills/install-cloud-clis .cursor/skills/
+```
+
+Or symlink:
+
+```bash
+ln -s ../../skills/host-email-link-docker .cursor/skills/host-email-link-docker
+```
+
+## Personal Cursor skills
+
+```bash
+cp -R skills/host-email-link-docker ~/.cursor/skills/
+cp -R skills/install-cloud-clis ~/.cursor/skills/
+```
+
+## npx skills (if you use the skills CLI)
+
+From the repo root (Bun preferred for JS; the skills CLI may still use npx):
+
+```bash
+# Example pattern — point at this repo’s skills directory per your CLI docs
+bunx skills add ./skills/host-email-link-docker
+```
+
+## What to tell the agent
+
+Provide:
+
+1. Docker image tag (default `rutviknabhoya/firebase-email-link-host:latest`)
+2. Env file contents or key/value pairs
+3. Target: `local` | `ssh` (host, user, key) | `fly` | `railway` | `render` | `cloudrun` | `apprunner` | `azure-container-apps`
+4. Optional custom domain / TLS notes

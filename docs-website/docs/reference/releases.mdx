@@ -1,0 +1,25 @@
+---
+sidebar_position: 1
+---
+
+# Releases
+
+Pushing a tag matching `v*` (example: `v1.2.0`) runs `.github/workflows/release.yml`:
+
+1. **Docker Hub** multi-arch push (`linux/amd64`, `linux/arm64`) to `rutviknabhoya/firebase-email-link-host`
+2. **Cross-compile** Go binaries (linux/darwin/windows)
+3. **GitHub Release** with binaries, `checksums.txt`, `compose.yml`, `.env.example`, `site.example.json`, `Dockerfile`
+
+## Required secrets
+
+| Secret | Purpose |
+| --- | --- |
+| `DOCKERHUB_TOKEN` | Docker Hub access token (required) |
+| `DOCKERHUB_USERNAME` | Docker Hub username (required) |
+
+## Create a release
+
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```

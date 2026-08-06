@@ -1,0 +1,25 @@
+---
+sidebar_position: 1
+---
+
+# Hosting overview
+
+Choose a path:
+
+| Option | Best for | Needs Blaze? |
+| --- | --- | --- |
+| [Docker](./docker) | VPS, Railway, Fly, Render, SSH hosts | No |
+| [Firebase Hosting](./firebase) | Spark free CDN | No |
+| [Cloudflare Pages](./cloudflare) | Global CDN | No |
+| [Vercel](./vercel) | Git-connected static | No |
+| [Netlify](./netlify) | Git-connected static | No |
+| [AWS Amplify](./amplify) | AWS static hosting | No |
+
+Static hosts publish `out/` from:
+
+```bash
+bun install
+bun run build
+```
+
+Docker uses the Go image — no Next build inside the container.

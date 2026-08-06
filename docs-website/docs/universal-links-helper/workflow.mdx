@@ -1,0 +1,15 @@
+---
+sidebar_position: 2
+---
+
+# Workflow with Email Link Host
+
+1. Open [app-universal-links-helper](https://github.com/rutvik24/app-universal-links-helper)
+2. Enter package name, SHA-256 fingerprints, Team ID, bundle ID, hosts, paths
+3. Download or copy `assetlinks.json` and `apple-app-site-association`
+4. In Email Link Host, set the matching env vars (or drop files under `public/.well-known/` for Next builds)
+5. Deploy Email Link Host (Docker or static CDN)
+6. Point Firebase Auth / app Associated Domains / App Links at that HTTPS origin
+7. Verify with the helper’s `curl` / `adb` / `swcutil` commands
+
+Manifest intent-filters from the helper go in your **mobile app**, not this host.

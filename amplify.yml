@@ -1,0 +1,33 @@
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - bun install --frozen-lockfile || bun install
+    build:
+      commands:
+        - bun run build
+  artifacts:
+    baseDirectory: out
+    files:
+      - "**/*"
+  cache:
+    paths:
+      - node_modules/**/*
+  customHeaders:
+    - pattern: "/.well-known/apple-app-site-association"
+      headers:
+        - key: "Content-Type"
+          value: "application/json; charset=utf-8"
+        - key: "Content-Disposition"
+          value: "inline"
+        - key: "X-Content-Type-Options"
+          value: "nosniff"
+    - pattern: "/.well-known/assetlinks.json"
+      headers:
+        - key: "Content-Type"
+          value: "application/json; charset=utf-8"
+        - key: "Content-Disposition"
+          value: "inline"
+        - key: "X-Content-Type-Options"
+          value: "nosniff"

@@ -1,0 +1,44 @@
+---
+sidebar_position: 2
+---
+
+# Configuration
+
+## Site JSON
+
+Defaults live in `config/site.json` (Next) / embedded default (Go). Override the file path:
+
+```bash
+SITE_CONFIG_PATH="config/site.json"
+# or
+NEXT_PUBLIC_SITE_CONFIG_PATH="/absolute/path/brand.json"
+```
+
+## Env vars
+
+Go/Docker accept **both** unprefixed and `NEXT_PUBLIC_` names (unprefixed wins if both set).
+
+| Unprefixed | `NEXT_PUBLIC_*` | Purpose |
+| --- | --- | --- |
+| `SITE_BRAND` | `NEXT_PUBLIC_SITE_BRAND` | Brand name |
+| `SITE_HEADLINE` | `NEXT_PUBLIC_SITE_HEADLINE` | Headline |
+| `SITE_TAGLINE` | `NEXT_PUBLIC_SITE_TAGLINE` | Tagline |
+| `SITE_FOOTER` | `NEXT_PUBLIC_SITE_FOOTER` | Footer |
+| `ANDROID_STORE_URL` | `NEXT_PUBLIC_ANDROID_STORE_URL` | Play Store button |
+| `IOS_STORE_URL` | `NEXT_PUBLIC_IOS_STORE_URL` | App Store button |
+| `THEME_*` | `NEXT_PUBLIC_THEME_*` | Colors |
+| `ANDROID_PACKAGE_NAME` | `NEXT_PUBLIC_ANDROID_PACKAGE_NAME` | assetlinks |
+| `ANDROID_SHA256_CERT_FINGERPRINTS` | same with prefix | Comma-separated SHA-256 |
+| `IOS_TEAM_ID` / `IOS_BUNDLE_ID` | with prefix | AASA |
+| `IOS_APP_PATHS` | with prefix | Optional AASA paths |
+
+Values in `.env` should use double quotes:
+
+```bash
+SITE_BRAND="My App"
+ANDROID_STORE_URL="https://play.google.com/store/apps/details?id=com.example"
+```
+
+## Generate association files
+
+Use [app-universal-links-helper](https://github.com/rutvik24/app-universal-links-helper) to build `assetlinks.json` / AASA / Manifest snippets, then paste values into env or host the JSON under `/.well-known/`.

@@ -1,0 +1,31 @@
+---
+sidebar_position: 4
+---
+
+# Serverless Docker options
+
+Same image: `rutviknabhoya/firebase-email-link-host`
+
+| Platform | Port | Notes |
+| --- | --- | --- |
+| [Fly.io](https://fly.io) | internal `8080` | `fly launch` / `fly deploy` with Dockerfile or image |
+| [Railway](https://railway.app) | set `PORT`/`ADDR` | Deploy from Docker Hub image |
+| [Render](https://render.com) | Web Service | Docker runtime |
+| [Google Cloud Run](https://cloud.google.com/run) | `$PORT` | Map container port 8080; set env |
+| [AWS App Runner](https://aws.amazon.com/apprunner/) | 8080 | From ECR or public Docker Hub |
+| [Azure Container Apps](https://learn.microsoft.com/azure/container-apps/) | 8080 | Ingress external |
+
+Go listens on `ADDR` (default `:8080`) or `PORT`.
+
+### Cloud Run example
+
+```bash
+gcloud run deploy email-link-host \
+  --image=rutviknabhoya/firebase-email-link-host:latest \
+  --platform=managed \
+  --allow-unauthenticated \
+  --port=8080 \
+  --set-env-vars="SITE_BRAND=MyApp,ANDROID_STORE_URL=https://..."
+```
+
+Prefer secret managers for sensitive values in production.
