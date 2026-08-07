@@ -32,13 +32,14 @@ bun run version:sync
 
 Pushing tag `v*` runs `.github/workflows/release.yml`, which **fails** if the tag does not match `VERSION`.
 
-1. **Docker Hub** multi-arch push (`linux/amd64`, `linux/arm64`) to `<DOCKERHUB_USERNAME>/firebase-email-link-host`
+1. **Docker Hub** multi-arch push (`linux/amd64`, `linux/arm64`) to `<DOCKERHUB_USERNAME>/email-link-host`
 2. **Cross-compile** Go binaries (linux/darwin/windows) with embedded version
 3. **GitHub Release** with binaries, `checksums.txt`, `VERSION`, `compose.yml`, `.env.example`, `site.example.json`, `Dockerfile`
 
-## Required secrets
+## Required secrets / variables
 
-| Secret | Purpose |
-| --- | --- |
-| `DOCKERHUB_TOKEN` | Docker Hub access token (required) |
-| `DOCKERHUB_USERNAME` | Docker Hub username (required) |
+| Name | Type | Purpose |
+| --- | --- | --- |
+| `DOCKERHUB_USERNAME` | **Variable** (recommended) | Docker Hub username (public; used in release notes) |
+| `DOCKERHUB_TOKEN` | Secret | Docker Hub access token |
+| `DOCKERHUB_USERNAME` | Secret (fallback) | Used only if the variable is unset |

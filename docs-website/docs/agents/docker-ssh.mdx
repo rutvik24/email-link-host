@@ -21,7 +21,7 @@ Use skill `host-email-link-docker` with target `ssh`.
 
 1. Ensure Docker is installed on the remote (`curl -fsSL https://get.docker.com | sh` or distro packages)
 2. `scp` `.env` (never commit secrets)
-3. `docker pull $DOCKERHUB_USERNAME/firebase-email-link-host:TAG`
+3. `docker pull $DOCKERHUB_USERNAME/email-link-host:TAG`
 4. Run with `--restart unless-stopped -p 80:8080` (or put Caddy/nginx TLS in front)
 5. Open firewall for HTTP/HTTPS
 6. Verify `curl -sI https://YOUR_DOMAIN/.well-known/apple-app-site-association` returns `Content-Type: application/json`
@@ -29,9 +29,9 @@ Use skill `host-email-link-docker` with target `ssh`.
 ## Example remote run
 
 ```bash
-ssh user@HOST "docker pull $DOCKERHUB_USERNAME/firebase-email-link-host:latest"
+ssh user@HOST "docker pull $DOCKERHUB_USERNAME/email-link-host:latest"
 scp .env user@HOST:~/email-link.env
 ssh user@HOST "docker run -d --name email-link-host --restart unless-stopped \
   -p 8080:8080 --env-file ~/email-link.env \
-  $DOCKERHUB_USERNAME/firebase-email-link-host:latest"
+  $DOCKERHUB_USERNAME/email-link-host:latest"
 ```

@@ -1,7 +1,7 @@
 ---
 name: install-cloud-clis
 description: >-
-  Install cloud and container CLIs needed to host firebase-email-link-host
+  Install cloud and container CLIs needed to host email-link-host
   (Docker, Bun, gcloud, aws, az, flyctl, railway, firebase-tools, wrangler,
   vercel, netlify). Use when preparing an environment for Docker SSH or
   serverless Docker deploys. Prefer Bun for JavaScript CLIs.

@@ -1,8 +1,8 @@
 ---
 name: host-email-link-docker
 description: >-
-  Deploy firebase-email-link-host using the published Docker image
-  ($DOCKERHUB_USERNAME/firebase-email-link-host) locally, over SSH to cloud VMs, or
+  Deploy email-link-host using the published Docker image
+  ($DOCKERHUB_USERNAME/email-link-host) locally, over SSH to cloud VMs, or
   on serverless Docker platforms (Fly, Railway, Render, Cloud Run, App Runner,
   Azure Container Apps). Use when the user wants to host the email-link /
   App Links site with Docker and provides env/config details.
@@ -12,7 +12,7 @@ description: >-
 
 ## Image
 
-- Repository: `$DOCKERHUB_USERNAME/firebase-email-link-host` (ask the user for their Docker Hub username / image namespace)
+- Repository: `$DOCKERHUB_USERNAME/email-link-host` (ask the user for their Docker Hub username / image namespace)
 - Tags: `latest`, semver (`1.2.3`), and git tags (`v1.2.3`)
 - Architectures: `linux/amd64`, `linux/arm64`
 - Container listens on `ADDR` (default `:8080`) or `PORT`
@@ -23,7 +23,7 @@ For Next/static builds or docs in this repo, use `bun` — never npm/yarn.
 
 ## Collect from the user
 
-1. Docker Hub username / full image name (default image: `$DOCKERHUB_USERNAME/firebase-email-link-host`)
+1. Docker Hub username / full image name (default image: `$DOCKERHUB_USERNAME/email-link-host`)
 2. Image tag (default `latest`)
 3. Env values (accept `SITE_BRAND` **or** `NEXT_PUBLIC_SITE_BRAND`, same for other keys)
 4. Target: `local` | `ssh` | `fly` | `railway` | `render` | `cloudrun` | `apprunner` | `azure-container-apps`
@@ -35,8 +35,8 @@ Write a temporary `.env` with double-quoted values; do not commit it.
 ## Local
 
 ```bash
-docker pull $DOCKERHUB_USERNAME/firebase-email-link-host:TAG
-docker run --rm -p 8080:8080 --env-file .env $DOCKERHUB_USERNAME/firebase-email-link-host:TAG
+docker pull $DOCKERHUB_USERNAME/email-link-host:TAG
+docker run --rm -p 8080:8080 --env-file .env $DOCKERHUB_USERNAME/email-link-host:TAG
 ```
 
 Or `docker compose up` using repo `compose.yml`.
@@ -59,7 +59,7 @@ Set env vars in the platform UI/CLI. Ensure the service targets port **8080** (o
 
 ```bash
 gcloud run deploy email-link-host \
-  --image=$DOCKERHUB_USERNAME/firebase-email-link-host:TAG \
+  --image=$DOCKERHUB_USERNAME/email-link-host:TAG \
   --allow-unauthenticated --port=8080 \
   --set-env-vars="KEY=value,..."
 ```
@@ -70,7 +70,7 @@ Use `flyctl` with the public image or deploy from the repo Dockerfile.
 
 ### Railway / Render
 
-Create a service from Docker Hub image `$DOCKERHUB_USERNAME/firebase-email-link-host`.
+Create a service from Docker Hub image `$DOCKERHUB_USERNAME/email-link-host`.
 
 ### AWS App Runner / Azure Container Apps
 

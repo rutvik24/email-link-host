@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 env:
-  IMAGE_NAME: firebase-email-link-host
+  IMAGE_NAME: email-link-host
 
 jobs:
   version:
@@ -17,12 +17,18 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.read.outputs.version }}
+      dockerhub_username: ${{ steps.read.outputs.dockerhub_username }}
+      docs_url: ${{ steps.read.outputs.docs_url }}
+      image: ${{ steps.read.outputs.image }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Read and validate VERSION vs tag
         id: read
+        env:
+          # Prefer public repo variable so release notes are not secret-masked.
+          DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME || secrets.DOCKERHUB_USERNAME }}
         run: |
           VERSION="$(tr -d '[:space:]' < VERSION)"
           TAG="${GITHUB_REF_NAME#v}"
@@ -30,8 +36,23 @@ jobs:
             echo "::error::Git tag ($GITHUB_REF_NAME) must match VERSION file (v$VERSION). Bump VERSION, run bun run version:sync, commit, then tag."
             exit 1
           fi
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          if [ -z "$DOCKERHUB_USERNAME" ]; then
+            echo "::error::Set repository variable DOCKERHUB_USERNAME (preferred) or secret DOCKERHUB_USERNAME."
+            exit 1
+          fi
+          OWNER="${GITHUB_REPOSITORY_OWNER}"
+          REPO="${GITHUB_REPOSITORY##*/}"
+          IMAGE="${DOCKERHUB_USERNAME}/${IMAGE_NAME}"
+          DOCS_URL="https://${OWNER}.github.io/${REPO}/"
+          {
+            echo "version=$VERSION"
+            echo "dockerhub_username=$DOCKERHUB_USERNAME"
+            echo "image=$IMAGE"
+            echo "docs_url=$DOCS_URL"
+          } >> "$GITHUB_OUTPUT"
           echo "Release version: $VERSION"
+          echo "Image: $IMAGE"
+          echo "Docs: $DOCS_URL"
 
   docker:
     name: Multi-arch Docker Hub image
@@ -39,25 +60,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v4
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - name: Log in to Docker Hub
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          username: ${{ needs.version.outputs.dockerhub_username }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Extract tag metadata
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
-          images: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}
+          images: ${{ needs.version.outputs.image }}
           tags: |
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
@@ -65,7 +86,7 @@ jobs:
             type=raw,value=${{ github.ref_name }}
 
       - name: Build and push
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: ./Dockerfile
@@ -97,10 +118,10 @@ jobs:
             ext: .exe
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
           go-version-file: go.mod
 
@@ -120,7 +141,7 @@ jobs:
           if [ "${{ matrix.goos }}" != "windows" ]; then chmod +x "$OUT"; fi
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: binary-${{ matrix.goos }}-${{ matrix.goarch }}
           path: dist/*
@@ -132,10 +153,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Download binaries
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           pattern: binary-*
           path: dist
@@ -146,50 +167,61 @@ jobs:
           cd dist
           sha256sum email-link-host_* > checksums.txt
           cd ..
-          cp compose.yml .env.example VERSION dist/
+          cp compose.yml VERSION dist/
+          cp .env.example dist/env.example
           cp config/site.json dist/site.example.json
           cp Dockerfile dist/Dockerfile
 
+      - name: Write release notes
+        env:
+          IMAGE: ${{ needs.version.outputs.image }}
+          TAG: ${{ github.ref_name }}
+          VERSION: ${{ needs.version.outputs.version }}
+          DOCS_URL: ${{ needs.version.outputs.docs_url }}
+        run: |
+          {
+            echo "## Version"
+            echo
+            echo "\`${VERSION}\` (from root \`VERSION\`; shared by Next, docs, Go, Docker)"
+            echo
+            echo "## Docker (multi-arch)"
+            echo
+            echo '```bash'
+            echo "docker pull ${IMAGE}:${TAG}"
+            echo "docker pull ${IMAGE}:latest"
+            echo '```'
+            echo
+            echo "Platforms: \`linux/amd64\`, \`linux/arm64\`."
+            echo
+            echo '```bash'
+            echo "docker run --rm -p 8080:8080 --env-file .env \\"
+            echo "  ${IMAGE}:${TAG}"
+            echo '```'
+            echo
+            echo "## Release assets"
+            echo
+            echo "- Go binaries: Linux / macOS / Windows (amd64/arm64 where applicable)"
+            echo "- \`checksums.txt\`, \`VERSION\`"
+            echo "- \`compose.yml\`, \`env.example\`, \`site.example.json\`, \`Dockerfile\`"
+            echo
+            echo "## Docs"
+            echo
+            echo "${DOCS_URL}"
+          } > release-notes.md
+
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ github.ref_name }}
           name: ${{ github.ref_name }}
           generate_release_notes: true
-          body: |
-            ## Version
-
-            `${{ needs.version.outputs.version }}` (from root `VERSION`; shared by Next, docs, Go, Docker)
-
-            ## Docker (multi-arch)
-
-            ```bash
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest
-            ```
-
-            Platforms: `linux/amd64`, `linux/arm64`.
-
-            ```bash
-            docker run --rm -p 8080:8080 --env-file .env \
-              ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}
-            ```
-
-            ## Release assets
-
-            - Go binaries: Linux / macOS / Windows (amd64/arm64 where applicable)
-            - `checksums.txt`, `VERSION`
-            - `compose.yml`, `.env.example`, `site.example.json`, `Dockerfile`
-
-            ## Docs
-
-            https://rutvik24.github.io/firebase-email-link-host/
+          body_path: release-notes.md
           files: |
             dist/email-link-host_*
             dist/checksums.txt
             dist/VERSION
             dist/compose.yml
-            dist/.env.example
+            dist/env.example
             dist/site.example.json
             dist/Dockerfile
         env:

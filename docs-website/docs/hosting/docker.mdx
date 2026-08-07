@@ -4,7 +4,7 @@ sidebar_position: 2
 
 # Docker
 
-Image: `$DOCKERHUB_USERNAME/firebase-email-link-host` (username comes from the `DOCKERHUB_USERNAME` GitHub Actions secret on release)  
+Image: `$DOCKERHUB_USERNAME/email-link-host` (username comes from the `DOCKERHUB_USERNAME` GitHub Actions secret on release)  
 Architectures: `linux/amd64`, `linux/arm64`  
 Base: `scratch` + single static Go binary
 
@@ -13,10 +13,10 @@ Base: `scratch` + single static Go binary
 ```bash
 export DOCKERHUB_USERNAME=your-dockerhub-user
 
-docker pull $DOCKERHUB_USERNAME/firebase-email-link-host:latest
+docker pull $DOCKERHUB_USERNAME/email-link-host:latest
 
 docker run --rm -p 8080:8080 --env-file .env \
-  $DOCKERHUB_USERNAME/firebase-email-link-host:latest
+  $DOCKERHUB_USERNAME/email-link-host:latest
 ```
 
 Or with Compose (builds from the repo Dockerfile):
@@ -35,7 +35,7 @@ Optional config mount:
 # compose.yml
 services:
   web:
-    image: ${DOCKERHUB_USERNAME}/firebase-email-link-host:latest
+    image: ${DOCKERHUB_USERNAME}/email-link-host:latest
     ports: ["8080:8080"]
     env_file: [.env]
     volumes:

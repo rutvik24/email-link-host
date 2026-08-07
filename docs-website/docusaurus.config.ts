@@ -13,10 +13,10 @@ const config: Config = {
   },
 
   url: "https://rutvik24.github.io",
-  baseUrl: "/firebase-email-link-host/",
+  baseUrl: "/email-link-host/",
 
   organizationName: "rutvik24",
-  projectName: "firebase-email-link-host",
+  projectName: "email-link-host",
   trailingSlash: false,
 
   onBrokenLinks: "throw",
@@ -33,7 +33,7 @@ const config: Config = {
         docs: {
           sidebarPath: "./sidebars.ts",
           editUrl:
-            "https://github.com/rutvik24/firebase-email-link-host/tree/main/docs-website/",
+            "https://github.com/rutvik24/email-link-host/tree/main/docs-website/",
         },
         blog: false,
         theme: {
@@ -62,7 +62,7 @@ const config: Config = {
           label: "Docs",
         },
         {
-          href: "https://github.com/rutvik24/firebase-email-link-host",
+          href: "https://github.com/rutvik24/email-link-host",
           label: "GitHub",
           position: "right",
         },
@@ -107,7 +107,7 @@ const config: Config = {
           items: [
             {
               label: "GitHub",
-              href: "https://github.com/rutvik24/firebase-email-link-host",
+              href: "https://github.com/rutvik24/email-link-host",
             },
           ],
         },

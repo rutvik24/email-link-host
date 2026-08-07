@@ -147,12 +147,12 @@ ADDR=:8080 ./bin/server
 ## Docs site (Docusaurus + Bun)
 
 ```bash
-bun run docs:dev      # http://localhost:3000/firebase-email-link-host/
+bun run docs:dev      # http://localhost:3000/email-link-host/
 bun run docs:build
 ```
 
 GitHub Pages deploys from `docs-website/` via `.github/workflows/docs.yml` →  
-https://rutvik24.github.io/firebase-email-link-host/
+https://rutvik24.github.io/email-link-host/
 
 ## Releases (tag → Docker Hub + GitHub Release)
 
@@ -168,18 +168,19 @@ git push origin main v1.0.0
 
 Tag must match `v$(cat VERSION)` or the release workflow fails.
 
-Requires repo secrets:
+Requires:
 
-| Secret | Purpose |
-| --- | --- |
-| `DOCKERHUB_USERNAME` | Docker Hub username |
-| `DOCKERHUB_TOKEN` | Docker Hub access token |
+| Name | Type | Purpose |
+| --- | --- | --- |
+| `DOCKERHUB_USERNAME` | Variable (preferred) | Docker Hub username |
+| `DOCKERHUB_TOKEN` | Secret | Docker Hub access token |
 
-Image: `<DOCKERHUB_USERNAME>/firebase-email-link-host`
+Image: `<DOCKERHUB_USERNAME>/email-link-host`  
+Docs: https://rutvik24.github.io/email-link-host/
 
 ## Agent skills
 
-See `skills/` and docs: [Agent overview](https://rutvik24.github.io/firebase-email-link-host/docs/agents/overview).
+See `skills/` and docs: [Agent overview](https://rutvik24.github.io/email-link-host/docs/agents/overview).
 
 ```bash
 mkdir -p .cursor/skills
