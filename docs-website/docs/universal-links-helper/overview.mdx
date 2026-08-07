@@ -4,7 +4,7 @@ sidebar_position: 1
 
 # Overview
 
-**[app-universal-links-helper](https://github.com/rutvik24/app-universal-links-helper)** is a browser tool (Next.js, Bun) that generates:
+**[App Universal Links Helper](https://rutvik24.github.io/app-universal-links-helper/)** ([GitHub](https://github.com/rutvik24/app-universal-links-helper)) is a browser tool (Next.js, Bun) that generates:
 
 - Android `assetlinks.json`
 - iOS `apple-app-site-association` (modern + legacy shapes)
@@ -12,6 +12,10 @@ sidebar_position: 1
 - Test commands (`adb`, `xcrun`, `curl`, `swcutil`)
 
 It does **not** upload files to your host — copy outputs into this Email Link Host (env / `.well-known`) or your own domain.
+
+## Live app
+
+https://rutvik24.github.io/app-universal-links-helper/
 
 ## Local
 
@@ -30,7 +34,7 @@ Open http://localhost:3000 — no env required. Use **Load sample data** for a f
 bun run build
 ```
 
-For project Pages (`https://<user>.github.io/<repo>/`):
+For project Pages (`https://rutvik24.github.io/app-universal-links-helper/`):
 
 ```bash
 NEXT_PUBLIC_BASE_PATH=/app-universal-links-helper bun run build

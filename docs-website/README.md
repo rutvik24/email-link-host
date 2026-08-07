@@ -1,6 +1,6 @@
 # Docs site
 
-Docusaurus docs for **Firebase Email Link Host** and **[app-universal-links-helper](https://github.com/rutvik24/app-universal-links-helper)**.
+Docusaurus docs for **Email Link Host** and **[App Universal Links Helper](https://rutvik24.github.io/app-universal-links-helper/)**.
 
 Always use **Bun**:
 

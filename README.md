@@ -12,11 +12,11 @@ Full docs: **[https://rutvik24.github.io/email-link-host/](https://rutvik24.gith
 | Configuration | [Site / theme / env](https://rutvik24.github.io/email-link-host/docs/email-link-host/configuration) |
 | Hosting overview | [Firebase, Cloudflare, Vercel, …](https://rutvik24.github.io/email-link-host/docs/hosting/overview) |
 | Docker | [Pure Go image](https://rutvik24.github.io/email-link-host/docs/hosting/docker) |
-| Universal Links Helper | [Companion tool](https://rutvik24.github.io/email-link-host/docs/universal-links-helper/overview) |
+| Universal Links Helper | [Live app](https://rutvik24.github.io/app-universal-links-helper/) · [docs](https://rutvik24.github.io/email-link-host/docs/universal-links-helper/overview) |
 | Agent skills | [AI deploy skills](https://rutvik24.github.io/email-link-host/docs/agents/overview) |
 | Releases | [VERSION + Docker Hub](https://rutvik24.github.io/email-link-host/docs/reference/releases) |
 
-Related: [app-universal-links-helper](https://github.com/rutvik24/app-universal-links-helper) · [Docker Hub](https://hub.docker.com/r/rutviknabhoya/email-link-host) · [GitHub Releases](https://github.com/rutvik24/email-link-host/releases)
+Related: [Links Helper](https://rutvik24.github.io/app-universal-links-helper/) · [helper source](https://github.com/rutvik24/app-universal-links-helper) · [Docker Hub](https://hub.docker.com/r/rutviknabhoya/email-link-host) · [GitHub Releases](https://github.com/rutvik24/email-link-host/releases)
 
 ## Highlights
 

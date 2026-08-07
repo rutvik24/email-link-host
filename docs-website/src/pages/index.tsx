@@ -63,8 +63,8 @@ const cards = [
   {
     title: "Universal Links Helper",
     body: <>Generate assetlinks, AASA, and Manifest snippets in the browser.</>,
-    to: "/docs/universal-links-helper/overview",
-    cta: "Helper docs →",
+    href: "https://rutvik24.github.io/app-universal-links-helper/",
+    cta: "Open live app →",
   },
   {
     title: "Agents",
@@ -97,9 +97,15 @@ export default function Home(): ReactNode {
                     {card.title}
                   </Heading>
                   <p>{card.body}</p>
-                  <Link className={styles.cardLink} to={card.to}>
-                    {card.cta}
-                  </Link>
+                  {"href" in card ? (
+                    <Link className={styles.cardLink} href={card.href}>
+                      {card.cta}
+                    </Link>
+                  ) : (
+                    <Link className={styles.cardLink} to={card.to}>
+                      {card.cta}
+                    </Link>
+                  )}
                 </div>
               </div>
             ))}

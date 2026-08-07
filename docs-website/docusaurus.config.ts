@@ -73,7 +73,7 @@ const config: Config = {
           position: "left",
         },
         {
-          href: "https://github.com/rutvik24/app-universal-links-helper",
+          href: "https://rutvik24.github.io/app-universal-links-helper/",
           label: "Links Helper",
           position: "right",
         },
@@ -107,7 +107,11 @@ const config: Config = {
           title: "Related",
           items: [
             {
-              label: "App Universal Links Helper",
+              label: "Links Helper (live)",
+              href: "https://rutvik24.github.io/app-universal-links-helper/",
+            },
+            {
+              label: "Links Helper (GitHub)",
               href: "https://github.com/rutvik24/app-universal-links-helper",
             },
             {
