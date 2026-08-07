@@ -5,8 +5,8 @@ import type * as Preset from "@docusaurus/preset-classic";
 const config: Config = {
   title: "Email Link Host",
   tagline:
-    "Free static host for Firebase Auth email links, App Links & Universal Links",
-  favicon: "img/favicon.ico",
+    "Branded HTTPS host for Firebase Auth email links, App Links & Universal Links",
+  favicon: "img/favicon.svg",
 
   future: {
     v4: true,
@@ -44,7 +44,7 @@ const config: Config = {
   ],
 
   themeConfig: {
-    image: "img/docusaurus-social-card.jpg",
+    image: "img/logo.svg",
     colorMode: {
       respectPrefersColorScheme: true,
     },
@@ -53,6 +53,7 @@ const config: Config = {
       logo: {
         alt: "Email Link Host",
         src: "img/logo.svg",
+        href: "/",
       },
       items: [
         {
@@ -62,9 +63,14 @@ const config: Config = {
           label: "Docs",
         },
         {
-          href: "https://github.com/rutvik24/email-link-host",
-          label: "GitHub",
-          position: "right",
+          to: "/docs/hosting/overview",
+          label: "Hosting",
+          position: "left",
+        },
+        {
+          to: "/docs/hosting/docker",
+          label: "Docker",
+          position: "left",
         },
         {
           href: "https://github.com/rutvik24/app-universal-links-helper",
@@ -72,19 +78,27 @@ const config: Config = {
           position: "right",
         },
         {
-          to: "/docs/hosting/docker",
-          label: "Docker",
+          href: "https://github.com/rutvik24/email-link-host",
+          label: "GitHub",
           position: "right",
         },
       ],
     },
     footer: {
       style: "dark",
+      logo: {
+        alt: "Email Link Host",
+        src: "img/logo.svg",
+        href: "/",
+        width: 48,
+        height: 48,
+      },
       links: [
         {
           title: "Docs",
           items: [
             { label: "Introduction", to: "/docs/intro" },
+            { label: "Configuration", to: "/docs/email-link-host/configuration" },
             { label: "Docker hosting", to: "/docs/hosting/docker" },
             { label: "Agent skills", to: "/docs/agents/overview" },
           ],
@@ -97,8 +111,12 @@ const config: Config = {
               href: "https://github.com/rutvik24/app-universal-links-helper",
             },
             {
-              label: "Docker hosting",
-              to: "/docs/hosting/docker",
+              label: "Docker Hub image",
+              href: "https://hub.docker.com/r/rutviknabhoya/email-link-host",
+            },
+            {
+              label: "Releases",
+              href: "https://github.com/rutvik24/email-link-host/releases",
             },
           ],
         },
@@ -109,10 +127,14 @@ const config: Config = {
               label: "GitHub",
               href: "https://github.com/rutvik24/email-link-host",
             },
+            {
+              label: "Docs site",
+              href: "https://rutvik24.github.io/email-link-host/",
+            },
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} rutvik24. Built with Docusaurus + Bun.`,
+      copyright: `Copyright © ${new Date().getFullYear()} rutvik24 · Email Link Host`,
     },
     prism: {
       theme: prismThemes.github,

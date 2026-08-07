@@ -1,6 +1,24 @@
-# Firebase Email Link Host
+# Email Link Host
 
-Free **static** host for mobile [Firebase Auth email-link](https://firebase.google.com/docs/auth/android/email-link-auth) sign-in (App Links / Universal Links), with a branded landing page and optional store buttons.
+Free **static** (or tiny Go/Docker) host for mobile [Firebase Auth email-link](https://firebase.google.com/docs/auth/android/email-link-auth) sign-in (App Links / Universal Links), with a branded landing page and optional store buttons.
+
+## Documentation
+
+Full docs: **[https://rutvik24.github.io/email-link-host/](https://rutvik24.github.io/email-link-host/)**
+
+| Topic | Link |
+| --- | --- |
+| Introduction | [Docs intro](https://rutvik24.github.io/email-link-host/docs/intro) |
+| Configuration | [Site / theme / env](https://rutvik24.github.io/email-link-host/docs/email-link-host/configuration) |
+| Hosting overview | [Firebase, Cloudflare, Vercel, …](https://rutvik24.github.io/email-link-host/docs/hosting/overview) |
+| Docker | [Pure Go image](https://rutvik24.github.io/email-link-host/docs/hosting/docker) |
+| Universal Links Helper | [Companion tool](https://rutvik24.github.io/email-link-host/docs/universal-links-helper/overview) |
+| Agent skills | [AI deploy skills](https://rutvik24.github.io/email-link-host/docs/agents/overview) |
+| Releases | [VERSION + Docker Hub](https://rutvik24.github.io/email-link-host/docs/reference/releases) |
+
+Related: [app-universal-links-helper](https://github.com/rutvik24/app-universal-links-helper) · [Docker Hub](https://hub.docker.com/r/rutviknabhoya/email-link-host) · [GitHub Releases](https://github.com/rutvik24/email-link-host/releases)
+
+## Highlights
 
 - No Firebase JS SDK, no Storage, no App Hosting / Blaze required for Firebase Hosting
 - Association files generated from env

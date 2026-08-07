@@ -1,30 +1,46 @@
-import type {ReactNode} from 'react';
-import clsx from 'clsx';
-import Link from '@docusaurus/Link';
-import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
-import Layout from '@theme/Layout';
-import Heading from '@theme/Heading';
+import type { ReactNode } from "react";
+import clsx from "clsx";
+import Link from "@docusaurus/Link";
+import useBaseUrl from "@docusaurus/useBaseUrl";
+import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
+import Layout from "@theme/Layout";
+import Heading from "@theme/Heading";
 
-import styles from './index.module.css';
+import styles from "./index.module.css";
 
 function HomepageHeader() {
-  const {siteConfig} = useDocusaurusContext();
+  const { siteConfig } = useDocusaurusContext();
+  const logo = useBaseUrl("/img/logo.svg");
+
   return (
-    <header className={clsx('hero hero--primary', styles.heroBanner)}>
-      <div className="container">
-        <Heading as="h1" className="hero__title">
+    <header className={clsx("hero hero--primary", styles.heroBanner)}>
+      <div className={clsx("container", styles.heroInner)}>
+        <img
+          className={styles.heroLogo}
+          src={logo}
+          alt="Email Link Host"
+          width={88}
+          height={88}
+        />
+        <Heading as="h1" className={styles.heroBrand}>
           {siteConfig.title}
         </Heading>
-        <p className="hero__subtitle">{siteConfig.tagline}</p>
+        <p className={styles.heroSubtitle}>{siteConfig.tagline}</p>
         <div className={styles.buttons}>
           <Link className="button button--secondary button--lg" to="/docs/intro">
             Read the docs
           </Link>
           <Link
             className="button button--outline button--lg"
-            style={{marginLeft: '0.75rem'}}
-            to="/docs/agents/overview">
-            Agent skills
+            to="/docs/hosting/docker"
+          >
+            Docker guide
+          </Link>
+          <Link
+            className="button button--outline button--lg"
+            href="https://github.com/rutvik24/email-link-host"
+          >
+            GitHub
           </Link>
         </div>
       </div>
@@ -32,39 +48,61 @@ function HomepageHeader() {
   );
 }
 
+const cards = [
+  {
+    title: "Email Link Host",
+    body: (
+      <>
+        Static / Go / Docker host for Firebase email links and{" "}
+        <code>.well-known</code> association files.
+      </>
+    ),
+    to: "/docs/email-link-host/overview",
+    cta: "Overview →",
+  },
+  {
+    title: "Universal Links Helper",
+    body: <>Generate assetlinks, AASA, and Manifest snippets in the browser.</>,
+    to: "/docs/universal-links-helper/overview",
+    cta: "Helper docs →",
+  },
+  {
+    title: "Agents",
+    body: (
+      <>
+        Skills to install cloud CLIs and deploy the Docker image over SSH or
+        serverless platforms.
+      </>
+    ),
+    to: "/docs/agents/overview",
+    cta: "Agent guide →",
+  },
+] as const;
+
 export default function Home(): ReactNode {
-  const {siteConfig} = useDocusaurusContext();
+  const { siteConfig } = useDocusaurusContext();
   return (
     <Layout
       title={siteConfig.title}
-      description="Docs for Firebase Email Link Host and App Universal Links Helper">
+      description="Docs for Email Link Host and App Universal Links Helper"
+    >
       <HomepageHeader />
       <main>
-        <section className="container margin-vert--lg">
+        <section className={clsx("container", styles.sections)}>
           <div className="row">
-            <div className="col col--4">
-              <h3>Email Link Host</h3>
-              <p>
-                Static / Go / Docker host for Firebase email links and{' '}
-                <code>.well-known</code> association files.
-              </p>
-              <Link to="/docs/email-link-host/overview">Overview →</Link>
-            </div>
-            <div className="col col--4">
-              <h3>Universal Links Helper</h3>
-              <p>
-                Generate assetlinks, AASA, and Manifest snippets in the browser.
-              </p>
-              <Link to="/docs/universal-links-helper/overview">Helper docs →</Link>
-            </div>
-            <div className="col col--4">
-              <h3>Agents</h3>
-              <p>
-                Skills to install cloud CLIs and deploy the Docker image over SSH
-                or serverless platforms.
-              </p>
-              <Link to="/docs/agents/overview">Agent guide →</Link>
-            </div>
+            {cards.map((card) => (
+              <div key={card.title} className="col col--4 margin-bottom--lg">
+                <div className={styles.card}>
+                  <Heading as="h3" className={styles.cardTitle}>
+                    {card.title}
+                  </Heading>
+                  <p>{card.body}</p>
+                  <Link className={styles.cardLink} to={card.to}>
+                    {card.cta}
+                  </Link>
+                </div>
+              </div>
+            ))}
           </div>
         </section>
       </main>
