@@ -5,6 +5,11 @@ import (
 	"strings"
 )
 
+// iosAuthLinksPath is the Firebase email-link continue URL path pattern.
+// Query params are not part of classic AASA path matching and remain available
+// whenever this path matches (e.g. /__/auth/links?link=...).
+const iosAuthLinksPath = "/__/auth/links*"
+
 func splitList(value string) []string {
 	if strings.TrimSpace(value) == "" {
 		return nil
@@ -18,6 +23,38 @@ func splitList(value string) []string {
 		}
 	}
 	return out
+}
+
+func isEnvDisabled(value string) bool {
+	switch strings.ToLower(strings.TrimSpace(value)) {
+	case "0", "false", "no", "off":
+		return true
+	default:
+		return false
+	}
+}
+
+func hasAuthLinksPath(paths []string) bool {
+	for _, path := range paths {
+		trimmed := strings.TrimSpace(path)
+		switch trimmed {
+		case "/__/auth/links", "/__/auth/links*", "NOT /__/auth/links", "NOT /__/auth/links*":
+			return true
+		}
+	}
+	return false
+}
+
+func resolveIOSPaths(configured []string, includeAuthLinks bool) []string {
+	paths := configured
+	if len(paths) == 0 {
+		paths = []string{"NOT /_/*", "/*"}
+	}
+	if !includeAuthLinks || hasAuthLinksPath(paths) {
+		return paths
+	}
+	// Prepend so this allow wins over a later `NOT /_/*` exclusion.
+	return append([]string{iosAuthLinksPath}, paths...)
 }
 
 // AssetLinksJSON builds Android Digital Asset Links payload from env.
@@ -43,10 +80,10 @@ func AssetLinksJSON() ([]byte, error) {
 func AppleAppSiteAssociationJSON() ([]byte, error) {
 	teamID := envDual("IOS_TEAM_ID")
 	bundleID := envDual("IOS_BUNDLE_ID")
-	paths := splitList(envDual("IOS_APP_PATHS"))
-	if len(paths) == 0 {
-		paths = []string{"NOT /_/*", "/*"}
-	}
+	paths := resolveIOSPaths(
+		splitList(envDual("IOS_APP_PATHS")),
+		!isEnvDisabled(envDual("IOS_INCLUDE_AUTH_LINKS")),
+	)
 
 	details := []any{}
 	if teamID != "" && bundleID != "" {

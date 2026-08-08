@@ -56,6 +56,40 @@ function readVar(name: string): string {
   return process.env[name]?.trim() ?? "";
 }
 
+/** Firebase email-link continue URL path; query params are not part of AASA path match. */
+const IOS_AUTH_LINKS_PATH = "/__/auth/links*";
+
+function isEnvDisabled(value: string | undefined): boolean {
+  const normalized = value?.trim().toLowerCase() ?? "";
+  return ["0", "false", "no", "off"].includes(normalized);
+}
+
+function resolveIosPaths(
+  configured: string[],
+  includeAuthLinks: boolean,
+): string[] {
+  const paths = configured.length > 0 ? [...configured] : ["NOT /_/*", "/*"];
+  if (!includeAuthLinks) {
+    return paths;
+  }
+
+  const alreadyListed = paths.some((path) => {
+    const trimmed = path.trim();
+    return (
+      trimmed === "/__/auth/links" ||
+      trimmed === "/__/auth/links*" ||
+      trimmed === "NOT /__/auth/links" ||
+      trimmed === "NOT /__/auth/links*"
+    );
+  });
+  if (alreadyListed) {
+    return paths;
+  }
+
+  // Prepend so this allow wins over a later `NOT /_/*` exclusion.
+  return [IOS_AUTH_LINKS_PATH, ...paths];
+}
+
 // Merge .env → .env.local. Non-empty process.env (shell/CI) wins.
 const fromFiles = {
   ...parseEnvFile(join(ROOT, ".env")),
@@ -78,7 +112,8 @@ const androidFingerprints = splitList(
 const iosTeamId = readVar("IOS_TEAM_ID");
 const iosBundleId = readVar("IOS_BUNDLE_ID");
 const iosPaths = splitList(process.env.IOS_APP_PATHS);
-const resolvedIosPaths = iosPaths.length > 0 ? iosPaths : ["NOT /_/*", "/*"];
+const includeAuthLinks = !isEnvDisabled(process.env.IOS_INCLUDE_AUTH_LINKS);
+const resolvedIosPaths = resolveIosPaths(iosPaths, includeAuthLinks);
 
 const assetLinks =
   androidPackage && androidFingerprints.length > 0

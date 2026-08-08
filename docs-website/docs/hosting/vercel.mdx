@@ -4,11 +4,44 @@ sidebar_position: 5
 
 # Vercel
 
-Publish the static `out/` directory. Headers live in `vercel.json`.
+Publish the static `out/` directory. Headers live in `vercel.json` — leave them unless you need extra routes.
+
+## Customize for your app
+
+| File | Change? | What to put |
+| --- | --- | --- |
+| [`vercel.json`](https://github.com/rutvik24/email-link-host/blob/main/vercel.json) | Rarely | Already sets `Content-Type` / `Content-Disposition: inline` for `.well-known` |
+| [`config/site.json`](https://github.com/rutvik24/email-link-host/blob/main/config/site.json) | **Yes** | Brand, copy, theme |
+| Vercel **Project → Settings → Environment Variables** | **Yes** | Association + store URL vars (Production / Preview / Development as needed) |
+
+### Framework / build settings (Git connect)
+
+| Setting | Value |
+| --- | --- |
+| Framework preset | Other (or leave blank) |
+| Build command | `bun run build` |
+| Output directory | `out` |
+| Install command | `bun install` (or enable Bun in the project) |
+
+### Env vars to set in Vercel
 
 ```bash
-bun run build
-bunx vercel deploy --prebuilt
+ANDROID_PACKAGE_NAME=com.yourcompany.yourapp
+ANDROID_SHA256_CERT_FINGERPRINTS=AA:BB:CC:...
+IOS_TEAM_ID=ABCDE12345
+IOS_BUNDLE_ID=com.yourcompany.yourapp
+NEXT_PUBLIC_ANDROID_STORE_URL=https://play.google.com/store/apps/details?id=com.yourcompany.yourapp
+NEXT_PUBLIC_IOS_STORE_URL=https://apps.apple.com/app/id1234567890
 ```
 
-Or connect the GitHub repo and set output to `out`.
+Redeploy after changing env — values are baked at build time.
+
+## Deploy (CLI)
+
+```bash
+bun install
+bun run build
+bunx vercel deploy --prebuilt --prod
+```
+
+Or connect the GitHub repo and rely on the settings above.

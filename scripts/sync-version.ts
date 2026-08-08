@@ -8,7 +8,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
-const root = join(import.meta.dir, "..");
+const root = join(import.meta.dirname, "..");
 const versionPath = join(root, "VERSION");
 
 const nextArg = process.argv[2]?.trim();

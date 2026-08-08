@@ -4,4 +4,4 @@ package version
 // Release builds may still override via:
 //   -ldflags="-X email-link-host/internal/version.Version=..."
 
-var Version = "1.1.0"
+var Version = "1.2.0"

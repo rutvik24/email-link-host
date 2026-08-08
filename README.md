@@ -11,12 +11,13 @@ Full docs: **[https://rutvik24.github.io/email-link-host/](https://rutvik24.gith
 | Introduction | [Docs intro](https://rutvik24.github.io/email-link-host/docs/intro) |
 | Configuration | [Site / theme / env](https://rutvik24.github.io/email-link-host/docs/email-link-host/configuration) |
 | Hosting overview | [Firebase, Cloudflare, Vercel, …](https://rutvik24.github.io/email-link-host/docs/hosting/overview) |
+| Live Firebase demo | [fir-email-link-host.web.app](https://fir-email-link-host.web.app) |
 | Docker | [Pure Go image](https://rutvik24.github.io/email-link-host/docs/hosting/docker) |
 | Universal Links Helper | [Live app](https://rutvik24.github.io/app-universal-links-helper/) · [docs](https://rutvik24.github.io/email-link-host/docs/universal-links-helper/overview) |
 | Agent skills | [AI deploy skills](https://rutvik24.github.io/email-link-host/docs/agents/overview) |
 | Releases | [VERSION + Docker Hub](https://rutvik24.github.io/email-link-host/docs/reference/releases) |
 
-Related: [Links Helper](https://rutvik24.github.io/app-universal-links-helper/) · [helper source](https://github.com/rutvik24/app-universal-links-helper) · [Docker Hub](https://hub.docker.com/r/rutviknabhoya/email-link-host) · [GitHub Releases](https://github.com/rutvik24/email-link-host/releases)
+Related: [Links Helper](https://rutvik24.github.io/app-universal-links-helper/) · [helper source](https://github.com/rutvik24/app-universal-links-helper) · [Docker Hub](https://hub.docker.com/r/rutviknabhoya/email-link-host) · [GitHub Releases](https://github.com/rutvik24/email-link-host/releases) · [Live Firebase demo](https://fir-email-link-host.web.app)
 
 ## Highlights
 
@@ -86,25 +87,40 @@ SITE_CONFIG_PATH="config/site.json"
 | `ANDROID_SHA256_CERT_FINGERPRINTS` | Comma-separated SHA-256 fingerprints |
 | `IOS_TEAM_ID` / `IOS_BUNDLE_ID` | Apple Team ID + bundle ID |
 | `IOS_APP_PATHS` | Optional paths (default `NOT /_/*,/*`) |
+| `IOS_INCLUDE_AUTH_LINKS` | Always prepend `/__/auth/links*` (default on; set `false` to disable) |
 
 ## Hosting options
 
-All platforms publish the static `out/` directory from `bun run build`.
+All CDN platforms publish the static `out/` directory from `bun run build`.  
+**App-specific values** (package name, Team ID, brand, theme) go in `config/site.json` + `.env` / host env vars — not in header config files. Full per-platform checklists: [Hosting docs](https://rutvik24.github.io/email-link-host/docs/hosting/overview).
+
+| Before deploy | Edit |
+| --- | --- |
+| Brand / theme / copy | `config/site.json` |
+| Android / iOS association + store URLs | `.env` (or CI/host env) |
+| Firebase project id | `.firebaserc` → `projects.default` |
+| Cloudflare project name | optional `wrangler.toml` → `name` |
+| Vercel / Netlify / Amplify | keep `vercel.json` / `netlify.toml` / `amplify.yml`; set env in the console |
 
 ### Firebase Hosting (Spark / free)
 
+**Live demo:** [https://fir-email-link-host.web.app](https://fir-email-link-host.web.app) · [assetlinks.json](https://fir-email-link-host.web.app/.well-known/assetlinks.json) · [AASA](https://fir-email-link-host.web.app/.well-known/apple-app-site-association)
+
 ```bash
+# 1) .firebaserc → your project id
+# 2) .env + config/site.json → your app
 bun run build
 npx -y firebase-tools@latest deploy --only hosting
 ```
 
-Headers: [`firebase.json`](firebase.json)
+Headers: [`firebase.json`](firebase.json) (leave as-is). Guide: [Firebase Hosting](https://rutvik24.github.io/email-link-host/docs/hosting/firebase).
 
 ### Cloudflare Pages
 
 - Build command: `bun run build` (or `npm run build`)
 - Output directory: `out`
 - Headers: [`public/_headers`](public/_headers) (copied into `out/`) + optional [`wrangler.toml`](wrangler.toml)
+- Set association env in **Pages → Settings → Environment variables** (build-time)
 
 ```bash
 npx wrangler pages deploy out
@@ -112,7 +128,7 @@ npx wrangler pages deploy out
 
 ### Vercel
 
-Connect the repo; framework preset can be Other with output `out`, or use [`vercel.json`](vercel.json) headers.
+Connect the repo; framework preset Other with output `out`, or use [`vercel.json`](vercel.json) headers. Put app IDs / store URLs in **Project env vars**, then rebuild.
 
 ```bash
 bun run build && npx vercel deploy --prebuilt
@@ -120,11 +136,11 @@ bun run build && npx vercel deploy --prebuilt
 
 ### Netlify
 
-[`netlify.toml`](netlify.toml) — build `bun run build`, publish `out`, JSON headers for `.well-known`.
+[`netlify.toml`](netlify.toml) — build `bun run build`, publish `out`, JSON headers for `.well-known`. Set app env in the Netlify UI.
 
 ### AWS Amplify
 
-[`amplify.yml`](amplify.yml) — build to `out` + `customHeaders` for association files.
+[`amplify.yml`](amplify.yml) — build to `out` + `customHeaders` for association files. Set app env in the Amplify console.
 
 ### Docker (pure Go — minimal image)
 
@@ -135,6 +151,7 @@ Docker does **not** copy the Next.js `out/` folder. The image is only a statical
 - `/.well-known/assetlinks.json` + `apple-app-site-association` as inline JSON
 
 ```bash
+# edit .env (and optionally config/site.json)
 docker compose up --build
 # → http://localhost:8080
 ```

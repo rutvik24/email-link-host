@@ -4,13 +4,49 @@ sidebar_position: 4
 
 # Cloudflare Pages
 
-- Build command: `bun run build`
-- Output directory: `out`
-- Headers: `public/_headers` (copied into `out/`)
+## Customize for your app
 
-```bash
-bun run build
-bunx wrangler pages deploy out
+| File | Change? | What to put |
+| --- | --- | --- |
+| [`wrangler.toml`](https://github.com/rutvik24/email-link-host/blob/main/wrangler.toml) | Optional | `name` = your Pages project name; keep `pages_build_output_dir = "out"` |
+| [`public/_headers`](https://github.com/rutvik24/email-link-host/blob/main/public/_headers) | No | Copied into `out/` on build — JSON inline headers for association files |
+| [`config/site.json`](https://github.com/rutvik24/email-link-host/blob/main/config/site.json) | **Yes** | Brand, copy, theme |
+| Pages **Environment variables** (or local `.env`) | **Yes** | Same association + store URL vars as [Configuration](../email-link-host/configuration) |
+
+### `wrangler.toml` example
+
+```toml
+name = "my-email-link-host"
+compatibility_date = "2025-01-01"
+pages_build_output_dir = "out"
 ```
 
-See `wrangler.toml` (`pages_build_output_dir = "out"`).
+### Env vars to set in Cloudflare (Production + Preview)
+
+| Variable | Example |
+| --- | --- |
+| `ANDROID_PACKAGE_NAME` | `com.yourcompany.yourapp` |
+| `ANDROID_SHA256_CERT_FINGERPRINTS` | `AA:BB:CC:...` |
+| `IOS_TEAM_ID` | `ABCDE12345` |
+| `IOS_BUNDLE_ID` | `com.yourcompany.yourapp` |
+| `NEXT_PUBLIC_ANDROID_STORE_URL` | Play Store URL |
+| `NEXT_PUBLIC_IOS_STORE_URL` | App Store URL |
+
+These must be available at **build** time so `generate:well-known` and Next can bake them into `out/`.
+
+## Deploy (CLI)
+
+```bash
+bun install
+bun run build
+bunx wrangler pages deploy out --project-name=my-email-link-host
+```
+
+## Deploy (Git)
+
+1. Connect the repo in Cloudflare Pages.
+2. Build command: `bun run build` (install Bun in the build image if needed, or use `npm`/`npx` equivalents).
+3. Output directory: `out`.
+4. Add the env vars above in **Settings → Environment variables**.
+
+See also [Hosting overview](./overview) for the shared pre-deploy checklist.

@@ -6,10 +6,76 @@ sidebar_position: 3
 
 Spark (free) is enough — no App Hosting / Blaze required.
 
-```bash
-bun install
-bun run build
-bunx firebase-tools@latest deploy --only hosting
+**Live example:** [https://fir-email-link-host.web.app](https://fir-email-link-host.web.app)  
+(also [fir-email-link-host.firebaseapp.com](https://fir-email-link-host.firebaseapp.com))
+
+| Check | Live URL |
+| --- | --- |
+| Landing | [fir-email-link-host.web.app](https://fir-email-link-host.web.app) |
+| Android App Links | [/.well-known/assetlinks.json](https://fir-email-link-host.web.app/.well-known/assetlinks.json) |
+| iOS AASA | [/.well-known/apple-app-site-association](https://fir-email-link-host.web.app/.well-known/apple-app-site-association) |
+
+## Customize for your app
+
+| File | Change? | What to put |
+| --- | --- | --- |
+| [`.firebaserc`](https://github.com/rutvik24/email-link-host/blob/main/.firebaserc) | **Yes** | Your Firebase project ID under `projects.default` |
+| [`firebase.json`](https://github.com/rutvik24/email-link-host/blob/main/firebase.json) | Rarely | Already points `public` → `out` and sets JSON headers for `.well-known`. Leave unless you add custom redirects |
+| [`config/site.json`](https://github.com/rutvik24/email-link-host/blob/main/config/site.json) | **Yes** | Your brand, copy, theme |
+| [`.env`](https://github.com/rutvik24/email-link-host/blob/main/.env.example) | **Yes** | Package name, SHA-256, iOS Team/Bundle ID, store URLs |
+
+### `.firebaserc` example
+
+```json
+{
+  "projects": {
+    "default": "your-firebase-project-id"
+  }
+}
 ```
 
-Headers for `.well-known` are in `firebase.json`. Live example pattern: `https://<site>.web.app`.
+### `.env` example (build-time)
+
+```bash
+NEXT_PUBLIC_ANDROID_STORE_URL="https://play.google.com/store/apps/details?id=com.yourcompany.yourapp"
+NEXT_PUBLIC_IOS_STORE_URL="https://apps.apple.com/app/id1234567890"
+
+ANDROID_PACKAGE_NAME="com.yourcompany.yourapp"
+ANDROID_SHA256_CERT_FINGERPRINTS="AA:BB:CC:DD:..."
+
+IOS_TEAM_ID="ABCDE12345"
+IOS_BUNDLE_ID="com.yourcompany.yourapp"
+# /__/auth/links* is prepended by default for Firebase email links
+```
+
+Association files are generated during `bun run build` (`prebuild` → `generate:well-known`). Empty `IOS_TEAM_ID` / `IOS_BUNDLE_ID` produces an AASA with empty `details`.
+
+## Deploy
+
+```bash
+cp .env.example .env
+# edit .env + config/site.json + .firebaserc
+
+bun install
+bun run build
+bunx firebase-tools@latest deploy --only hosting --project your-firebase-project-id
+```
+
+Live site: [https://fir-email-link-host.web.app](https://fir-email-link-host.web.app) (or your custom domain attached in the Firebase console).
+
+## CI / GitHub Actions tip
+
+Store association and `NEXT_PUBLIC_*` values as repository secrets/variables and write them into `.env` (or export them) **before** `bun run build`. Firebase Hosting only uploads `out/` — it does not re-read `.env` at serve time.
+
+## Verify
+
+Against the live demo:
+
+```bash
+curl -sS https://fir-email-link-host.web.app/.well-known/assetlinks.json
+curl -sSI https://fir-email-link-host.web.app/.well-known/apple-app-site-association
+```
+
+Against your own deploy, swap the host for `https://YOUR_SITE.web.app` (or your custom domain).
+
+Expect `Content-Type: application/json` and `Content-Disposition: inline` (configured in `firebase.json`).

@@ -4,6 +4,22 @@ sidebar_position: 2
 
 # Configuration
 
+## Files to customize for your app
+
+| File | When | What to change |
+| --- | --- | --- |
+| [`config/site.json`](https://github.com/rutvik24/email-link-host/blob/main/config/site.json) | Always (recommended) | `brand`, `headline`, `tagline`, `footer`, store button labels, `theme` colors |
+| [`.env`](https://github.com/rutvik24/email-link-host/blob/main/.env.example) / host CI env | Always for App Links / Universal Links | Package name, SHA-256 fingerprints, iOS Team + Bundle ID, store URLs |
+| Platform file (`.firebaserc`, `wrangler.toml`, …) | Per host | See [Hosting overview](../hosting/overview) — usually only project/site **name**, not headers |
+
+Copy the example env first:
+
+```bash
+cp .env.example .env
+# or for Next local overrides:
+cp .env.example .env.local
+```
+
 ## Site JSON
 
 Defaults live in `config/site.json` (Next) / embedded default (Go). Override the file path:
@@ -14,9 +30,28 @@ SITE_CONFIG_PATH="config/site.json"
 NEXT_PUBLIC_SITE_CONFIG_PATH="/absolute/path/brand.json"
 ```
 
+Example shape:
+
+```json
+{
+  "brand": "My App",
+  "headline": "Continue in the app",
+  "tagline": "Open the app to finish signing in.",
+  "footer": "Secure sign-in links",
+  "androidStoreLabel": "Get it on Google Play",
+  "iosStoreLabel": "Download on the App Store",
+  "theme": {
+    "background": "#071512",
+    "accent": "#D2F26B"
+  }
+}
+```
+
 ## Env vars
 
 Go/Docker accept **both** unprefixed and `NEXT_PUBLIC_` names (unprefixed wins if both set).
+
+Static CDN builds bake `NEXT_PUBLIC_*` and association files at **build** time. Docker/Go read env at **runtime**.
 
 | Unprefixed | `NEXT_PUBLIC_*` | Purpose |
 | --- | --- | --- |
@@ -30,15 +65,42 @@ Go/Docker accept **both** unprefixed and `NEXT_PUBLIC_` names (unprefixed wins i
 | `ANDROID_PACKAGE_NAME` | `NEXT_PUBLIC_ANDROID_PACKAGE_NAME` | assetlinks |
 | `ANDROID_SHA256_CERT_FINGERPRINTS` | same with prefix | Comma-separated SHA-256 |
 | `IOS_TEAM_ID` / `IOS_BUNDLE_ID` | with prefix | AASA |
-| `IOS_APP_PATHS` | with prefix | Optional AASA paths |
+| `IOS_APP_PATHS` | with prefix | Optional AASA paths (default `NOT /_/*,/*`) |
+| `IOS_INCLUDE_AUTH_LINKS` | with prefix | Always prepend `/__/auth/links*` (default on; `false`/`0`/`no`/`off` disables) |
 
 Values in `.env` should use double quotes:
 
 ```bash
 SITE_BRAND="My App"
-ANDROID_STORE_URL="https://play.google.com/store/apps/details?id=com.example"
+ANDROID_PACKAGE_NAME="com.yourcompany.yourapp"
+ANDROID_SHA256_CERT_FINGERPRINTS="AA:BB:CC:..."
+IOS_TEAM_ID="ABCDE12345"
+IOS_BUNDLE_ID="com.yourcompany.yourapp"
+ANDROID_STORE_URL="https://play.google.com/store/apps/details?id=com.yourcompany.yourapp"
 ```
+
+### iOS AASA paths
+
+By default the host emits:
+
+```text
+/__/auth/links*, NOT /_/*, /*
+```
+
+So Firebase email-link continue URLs (`/__/auth/links?...`) stay claimable even when other `/_/*` paths are excluded. Disable the auth-links entry with `IOS_INCLUDE_AUTH_LINKS=false`.
 
 ## Generate association files
 
-Use [App Universal Links Helper](https://rutvik24.github.io/app-universal-links-helper/) ([source](https://github.com/rutvik24/app-universal-links-helper)) to build `assetlinks.json` / AASA / Manifest snippets, then paste values into env or host the JSON under `/.well-known/`.
+Use [App Universal Links Helper](https://rutvik24.github.io/app-universal-links-helper/) ([source](https://github.com/rutvik24/app-universal-links-helper)) to build `assetlinks.json` / AASA / Manifest snippets, then paste values into env. On Next builds, `bun run generate:well-known` (via `prebuild`) writes `public/.well-known/` from those env vars.
+
+## After config changes
+
+| Runtime | What to do |
+| --- | --- |
+| Local Next | Restart `bun run dev` (or re-run `bun run generate:well-known`) |
+| Static host (Firebase, Cloudflare, …) | Rebuild + redeploy so `out/` picks up new env |
+| Docker / Go | Restart the container/process with the updated `.env` or mounted JSON |
+
+**Reference deploy:** [https://fir-email-link-host.web.app](https://fir-email-link-host.web.app) — see [Firebase Hosting](../hosting/firebase) for curl checks against the live association files.
+
+Next: pick a host under [Hosting overview](../hosting/overview).

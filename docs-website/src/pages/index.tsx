@@ -32,6 +32,12 @@ function HomepageHeader() {
           </Link>
           <Link
             className="button button--outline button--lg"
+            href="https://fir-email-link-host.web.app"
+          >
+            Live Firebase demo
+          </Link>
+          <Link
+            className="button button--outline button--lg"
             to="/docs/hosting/docker"
           >
             Docker guide

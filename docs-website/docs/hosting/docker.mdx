@@ -8,7 +8,49 @@ Image: `$DOCKERHUB_USERNAME/email-link-host` (username comes from the `DOCKERHUB
 Architectures: `linux/amd64`, `linux/arm64`  
 Base: `scratch` + single static Go binary
 
-## Run
+Unlike CDN hosts, Docker reads config at **runtime** — no `bun run build` inside the container.
+
+## Customize for your app
+
+| File | Change? | What to put |
+| --- | --- | --- |
+| [`.env`](https://github.com/rutvik24/email-link-host/blob/main/.env.example) | **Yes** | Store URLs, Android package + SHA-256, iOS Team/Bundle ID, optional theme/copy overrides |
+| [`config/site.json`](https://github.com/rutvik24/email-link-host/blob/main/config/site.json) | Optional | Mount into the container and set `SITE_CONFIG_PATH` (otherwise embedded defaults + env) |
+| [`compose.yml`](https://github.com/rutvik24/email-link-host/blob/main/compose.yml) | Optional | Port mapping, image tag/`VERSION`, uncomment volume + `SITE_CONFIG_PATH` |
+
+### `.env` example (runtime)
+
+```bash
+ANDROID_PACKAGE_NAME="com.yourcompany.yourapp"
+ANDROID_SHA256_CERT_FINGERPRINTS="AA:BB:CC:..."
+
+IOS_TEAM_ID="ABCDE12345"
+IOS_BUNDLE_ID="com.yourcompany.yourapp"
+
+# Unprefixed or NEXT_PUBLIC_ both work for Go/Docker
+ANDROID_STORE_URL="https://play.google.com/store/apps/details?id=com.yourcompany.yourapp"
+IOS_STORE_URL="https://apps.apple.com/app/id1234567890"
+SITE_BRAND="My App"
+```
+
+`/__/auth/links*` is included in AASA by default. Set `IOS_INCLUDE_AUTH_LINKS=false` only if you must disable it.
+
+### `compose.yml` — mount your site JSON
+
+```yaml
+services:
+  web:
+    image: ${DOCKERHUB_USERNAME}/email-link-host:latest
+    ports: ["8080:8080"]
+    env_file: [.env]
+    volumes:
+      - ./config/site.json:/config/site.json:ro
+    environment:
+      SITE_CONFIG_PATH: /config/site.json
+      ADDR: ":8080"
+```
+
+## Run (published image)
 
 ```bash
 export DOCKERHUB_USERNAME=your-dockerhub-user
@@ -19,30 +61,24 @@ docker run --rm -p 8080:8080 --env-file .env \
   $DOCKERHUB_USERNAME/email-link-host:latest
 ```
 
-Or with Compose (builds from the repo Dockerfile):
+## Run (build from repo)
 
 ```bash
+# edit .env + optional config/site.json
 docker compose up --build
+# → http://localhost:8080
 ```
 
-## Env
+Or:
+
+```bash
+bun run docker:build
+bun run docker:run   # passes --env-file .env
+```
+
+## Env naming
 
 Same dual naming as Go (`SITE_BRAND` or `NEXT_PUBLIC_SITE_BRAND`, …). See [Configuration](../email-link-host/configuration).
-
-Optional config mount:
-
-```yaml
-# compose.yml
-services:
-  web:
-    image: ${DOCKERHUB_USERNAME}/email-link-host:latest
-    ports: ["8080:8080"]
-    env_file: [.env]
-    volumes:
-      - ./config/site.json:/config/site.json:ro
-    environment:
-      SITE_CONFIG_PATH: /config/site.json
-```
 
 ## Release tags
 
