@@ -6,14 +6,14 @@
   "androidStoreLabel": "Get it on Google Play",
   "iosStoreLabel": "Download on the App Store",
   "theme": {
-    "background": "#071512",
-    "backgroundAccent": "#12352E",
-    "foreground": "#F3F7F5",
-    "muted": "#9BB5AC",
-    "accent": "#D2F26B",
-    "accentForeground": "#0A1612",
-    "surface": "rgba(255,255,255,0.07)",
-    "border": "rgba(255,255,255,0.14)",
-    "glow": "rgba(210,242,107,0.22)"
+    "background": "#060811",
+    "backgroundAccent": "#0d1227",
+    "foreground": "#f8fafc",
+    "muted": "#94a3b8",
+    "accent": "#00f2fe",
+    "accentForeground": "#060811",
+    "surface": "rgba(15, 23, 42, 0.65)",
+    "border": "rgba(56, 189, 248, 0.18)",
+    "glow": "rgba(0, 242, 254, 0.25)"
   }
 }

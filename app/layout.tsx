@@ -1,18 +1,18 @@
 import type { Metadata } from "next";
-import { DM_Sans, Syne } from "next/font/google";
+import { Outfit, JetBrains_Mono } from "next/font/google";
 import { getSiteConfig } from "@/lib/site-config";
 import "./globals.css";
 
-const syne = Syne({
-  variable: "--font-display",
+const outfit = Outfit({
+  variable: "--font-outfit",
   subsets: ["latin"],
-  weight: ["500", "600", "700"],
+  weight: ["400", "500", "600", "700", "800"],
 });
 
-const dmSans = DM_Sans({
-  variable: "--font-body",
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-mono",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "500", "600"],
 });
 
 const site = getSiteConfig();
@@ -26,9 +26,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${syne.variable} ${dmSans.variable} h-full antialiased`}
+      className={`${outfit.variable} ${jetbrainsMono.variable} h-full antialiased dark`}
     >
-      <body className="flex min-h-full flex-col font-sans">{children}</body>
+      <body className="flex min-h-full flex-col font-sans bg-[#060811] text-[#f8fafc]">{children}</body>
     </html>
   );
 }
+

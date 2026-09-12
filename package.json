@@ -15,8 +15,8 @@
     "serve:bin": "VERSION=$(tr -d '[:space:]' < VERSION) && go build -ldflags=\"-s -w -X email-link-host/internal/version.Version=$VERSION\" -o bin/server ./cmd/server && ./bin/server",
     "docker:build": "VERSION=$(tr -d '[:space:]' < VERSION) && docker build --build-arg VERSION=$VERSION -t email-link-host:$VERSION -t email-link-host:latest .",
     "docker:run": "docker run --rm -p 8080:8080 --env-file .env email-link-host:latest",
-    "docs:dev": "bun --cwd docs-website start",
-    "docs:build": "bun --cwd docs-website install && bun --cwd docs-website run build",
+    "docs:dev": "cd docs-website && bun run start",
+    "docs:build": "cd docs-website && bun run build",
     "docs:serve": "bun --cwd docs-website serve",
     "lint": "eslint"
   },
