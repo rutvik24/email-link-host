@@ -28,7 +28,7 @@ jobs:
         id: read
         env:
           # Prefer public repo variable so release notes are not secret-masked.
-          DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME || secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME || vars.DOCKERHUB_USERNAME }}
         run: |
           VERSION="$(tr -d '[:space:]' < VERSION)"
           TAG="${GITHUB_REF_NAME#v}"
@@ -162,12 +162,12 @@ jobs:
 
       - name: Install & build Next.js export
         env:
-          NEXT_PUBLIC_ANDROID_STORE_URL: ${{ vars.NEXT_PUBLIC_ANDROID_STORE_URL || secrets.NEXT_PUBLIC_ANDROID_STORE_URL }}
-          NEXT_PUBLIC_IOS_STORE_URL: ${{ vars.NEXT_PUBLIC_IOS_STORE_URL || secrets.NEXT_PUBLIC_IOS_STORE_URL }}
-          ANDROID_PACKAGE_NAME: ${{ vars.ANDROID_PACKAGE_NAME || secrets.ANDROID_PACKAGE_NAME }}
-          ANDROID_SHA256_CERT_FINGERPRINTS: ${{ vars.ANDROID_SHA256_CERT_FINGERPRINTS || secrets.ANDROID_SHA256_CERT_FINGERPRINTS }}
-          IOS_TEAM_ID: ${{ vars.IOS_TEAM_ID || secrets.IOS_TEAM_ID }}
-          IOS_BUNDLE_ID: ${{ vars.IOS_BUNDLE_ID || secrets.IOS_BUNDLE_ID }}
+          NEXT_PUBLIC_ANDROID_STORE_URL: ${{ secrets.NEXT_PUBLIC_ANDROID_STORE_URL || vars.NEXT_PUBLIC_ANDROID_STORE_URL }}
+          NEXT_PUBLIC_IOS_STORE_URL: ${{ secrets.NEXT_PUBLIC_IOS_STORE_URL || vars.NEXT_PUBLIC_IOS_STORE_URL }}
+          ANDROID_PACKAGE_NAME: ${{ secrets.ANDROID_PACKAGE_NAME || vars.ANDROID_PACKAGE_NAME }}
+          ANDROID_SHA256_CERT_FINGERPRINTS: ${{ secrets.ANDROID_SHA256_CERT_FINGERPRINTS || vars.ANDROID_SHA256_CERT_FINGERPRINTS }}
+          IOS_TEAM_ID: ${{ secrets.IOS_TEAM_ID || vars.IOS_TEAM_ID }}
+          IOS_BUNDLE_ID: ${{ secrets.IOS_BUNDLE_ID || vars.IOS_BUNDLE_ID }}
         run: |
           bun install --frozen-lockfile
           bun run build
